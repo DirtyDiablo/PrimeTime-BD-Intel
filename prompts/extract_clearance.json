@@ -1,0 +1,63 @@
+{
+  "system_prompt": "You are an expert in analyzing job postings for security clearance requirements. Your task is to extract and classify the security clearance level mentioned in job descriptions.",
+  "user_prompt_template": "Analyze the following job posting and extract the security clearance requirement:\n\nJob Title: {title}\nCompany: {company}\nLocation: {location}\nDescription: {description}\n\nPlease return a JSON response with the following structure:\n{\n  \"clearance_level\": \"TS/SCI|TS|Secret|Confidential|None\",\n  \"confidence\": 0.95,\n  \"reasoning\": \"explanation of why this clearance level was identified\",\n  \"keywords_found\": [\"keyword1\", \"keyword2\"],\n  \"additional_requirements\": [\"requirement1\", \"requirement2\"]\n}\n\nClearance level options:\n- TS/SCI: Top Secret/Sensitive Compartmented Information\n- TS: Top Secret\n- Secret: Secret clearance\n- Confidential: Confidential clearance\n- None: No clearance requirement found\n\nIf multiple clearance levels are mentioned, choose the highest level required.",
+  "examples": [
+    {
+      "input": {
+        "title": "Software Engineer - TS/SCI Required",
+        "company": "Northrop Grumman",
+        "location": "Palmdale, CA",
+        "description": "We are seeking a Software Engineer with active TS/SCI clearance to support classified programs. Must have experience with embedded systems and real-time software development."
+      },
+      "output": {
+        "clearance_level": "TS/SCI",
+        "confidence": 0.98,
+        "reasoning": "The job title explicitly states 'TS/SCI Required' and the description mentions 'active TS/SCI clearance'",
+        "keywords_found": ["TS/SCI", "active TS/SCI clearance", "classified programs"],
+        "additional_requirements": ["embedded systems", "real-time software development"]
+      }
+    },
+    {
+      "input": {
+        "title": "Systems Administrator",
+        "company": "Boeing",
+        "location": "St. Louis, MO",
+        "description": "Looking for a Systems Administrator to support DoD programs. Must have Secret clearance or ability to obtain. Experience with Windows and Linux systems required."
+      },
+      "output": {
+        "clearance_level": "Secret",
+        "confidence": 0.92,
+        "reasoning": "The description mentions 'Secret clearance or ability to obtain' and 'DoD programs'",
+        "keywords_found": ["Secret clearance", "DoD programs"],
+        "additional_requirements": ["Windows systems", "Linux systems"]
+      }
+    },
+    {
+      "input": {
+        "title": "Project Manager",
+        "company": "General Dynamics",
+        "location": "Falls Church, VA",
+        "description": "Project Manager needed for government contracts. Experience with program management and team leadership required. No clearance mentioned."
+      },
+      "output": {
+        "clearance_level": "None",
+        "confidence": 0.85,
+        "reasoning": "No specific clearance requirements mentioned in the job posting",
+        "keywords_found": ["government contracts"],
+        "additional_requirements": ["program management", "team leadership"]
+      }
+    }
+  ],
+  "parameters": {
+    "model": "gpt-4-turbo-preview",
+    "temperature": 0.1,
+    "max_tokens": 500,
+    "response_format": "json"
+  },
+  "validation_rules": {
+    "required_fields": ["clearance_level", "confidence", "reasoning"],
+    "clearance_levels": ["TS/SCI", "TS", "Secret", "Confidential", "None"],
+    "confidence_range": [0.0, 1.0],
+    "min_confidence_threshold": 0.7
+  }
+}

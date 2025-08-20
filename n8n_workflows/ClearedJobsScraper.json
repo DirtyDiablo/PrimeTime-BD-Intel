@@ -1,0 +1,248 @@
+{
+  "name": "ClearedJobs Scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hour",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.clearancejobs.com/jobs",
+        "options": {
+          "timeout": 30000,
+          "waitUntil": "networkidle"
+        }
+      },
+      "id": "http-request",
+      "name": "Fetch ClearedJobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract job listings from ClearedJobs page\nconst jobs = [];\nconst jobElements = document.querySelectorAll('.job-listing');\n\njobElements.forEach((jobElement, index) => {\n  try {\n    const title = jobElement.querySelector('.job-title')?.textContent?.trim() || '';\n    const company = jobElement.querySelector('.company-name')?.textContent?.trim() || '';\n    const location = jobElement.querySelector('.job-location')?.textContent?.trim() || '';\n    const clearance = jobElement.querySelector('.clearance-level')?.textContent?.trim() || '';\n    const description = jobElement.querySelector('.job-description')?.textContent?.trim() || '';\n    const url = jobElement.querySelector('a')?.href || '';\n    const postedDate = jobElement.querySelector('.posted-date')?.textContent?.trim() || '';\n    \n    jobs.push({\n      id: `clearedjobs_${Date.now()}_${index}`,\n      title,\n      company,\n      location,\n      clearance_level: clearance,\n      description,\n      url,\n      posted_date: postedDate,\n      source: 'ClearedJobs',\n      scraped_at: new Date().toISOString(),\n      raw_data: jobElement.outerHTML\n    });\n  } catch (error) {\n    console.error(`Error processing job ${index}:`, error);\n  }\n});\n\nreturn jobs;"
+      },
+      "id": "code-node",
+      "name": "Extract Job Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "title-filter",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "clearance-filter",
+              "leftValue": "={{ $json.clearance_level }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-node",
+      "name": "Filter Valid Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "clearedjobs_jobs",
+        "options": {
+          "upsert": true
+        }
+      },
+      "id": "mongodb-node",
+      "name": "Store Raw Jobs",
+      "type": "n8n-nodes-base.mongodb",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO jobs_raw (job_id, title, company, location, clearance_level, description, url, posted_date, source, scraped_at, raw_data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (job_id) DO NOTHING",
+        "options": {
+          "queryReplacement": "={{ $json.job_id }}, {{ $json.title }}, {{ $json.company }}, {{ $json.location }}, {{ $json.clearance_level }}, {{ $json.description }}, {{ $json.url }}, {{ $json.posted_date }}, {{ $json.source }}, {{ $json.scraped_at }}, {{ $json.raw_data }}"
+        }
+      },
+      "id": "postgres-node",
+      "name": "Store in PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "{{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "={{ 'ClearedJobs Scraper: Found ' + $json.length + ' new jobs with clearance requirements' }}",
+        "additionalFields": {}
+      },
+      "id": "telegram-node",
+      "name": "Send Notification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "toEmail": "{{ $env.NOTIFICATION_EMAIL }}",
+        "subject": "ClearedJobs Scraper Results",
+        "text": "={{ 'Found ' + $json.length + ' new jobs with clearance requirements. Check the database for details.' }}",
+        "options": {}
+      },
+      "id": "email-node",
+      "name": "Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "toEmail": "{{ $env.ADMIN_EMAIL }}",
+        "subject": "ClearedJobs Scraper Error",
+        "text": "={{ 'Error in ClearedJobs scraper: ' + $json.error }}",
+        "options": {}
+      },
+      "id": "error-email",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 400]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch ClearedJobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch ClearedJobs": {
+      "main": [
+        [
+          {
+            "node": "Extract Job Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Job Data": {
+      "main": [
+        [
+          {
+            "node": "Filter Valid Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Valid Jobs": {
+      "main": [
+        [
+          {
+            "node": "Store Raw Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Raw Jobs": {
+      "main": [
+        [
+          {
+            "node": "Store in PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store in PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Send Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Notification": {
+      "main": [
+        [
+          {
+            "node": "Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "clearedjobs",
+      "name": "ClearedJobs"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}

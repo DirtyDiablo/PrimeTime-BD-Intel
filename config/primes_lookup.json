@@ -1,0 +1,136 @@
+{
+  "prime_contractors": {
+    "Northrop Grumman": {
+      "programs": ["GBSD", "B-21"],
+      "headquarters": "Falls Church, VA",
+      "key_locations": ["Palmdale, CA", "Clearfield, UT", "Melbourne, FL", "Baltimore, MD"],
+      "subcontractors": {
+        "GBSD": ["Boeing", "Lockheed Martin", "L3Harris", "Raytheon", "Aerojet Rocketdyne"],
+        "B-21": ["Pratt & Whitney", "Collins Aerospace", "BAE Systems", "Spirit AeroSystems"]
+      },
+      "clearance_facilities": ["TS/SCI", "TS", "Secret"],
+      "contract_vehicles": ["IDIQ", "CPFF", "Firm Fixed Price"]
+    },
+    "Boeing": {
+      "programs": ["NGAD", "KC-46", "T-7A", "MQ-25", "F/A-18"],
+      "headquarters": "Arlington, VA",
+      "key_locations": ["Seattle, WA", "St. Louis, MO", "Mesa, AZ", "Ridley Park, PA"],
+      "subcontractors": {
+        "NGAD": ["GE Aviation", "Collins Aerospace", "BAE Systems", "Raytheon"],
+        "KC-46": ["Collins Aerospace", "GE Aviation", "Honeywell", "Rockwell Collins"],
+        "T-7A": ["Saab", "Collins Aerospace", "GE Aviation"],
+        "MQ-25": ["GE Aviation", "Collins Aerospace", "BAE Systems"],
+        "F/A-18": ["GE Aviation", "Collins Aerospace", "Raytheon"]
+      },
+      "clearance_facilities": ["TS/SCI", "TS", "Secret"],
+      "contract_vehicles": ["IDIQ", "CPFF", "Firm Fixed Price"]
+    },
+    "Lockheed Martin": {
+      "programs": ["F-35"],
+      "headquarters": "Bethesda, MD",
+      "key_locations": ["Fort Worth, TX", "Palmdale, CA", "Marietta, GA", "Owego, NY"],
+      "subcontractors": {
+        "F-35": ["Pratt & Whitney", "BAE Systems", "Northrop Grumman", "Collins Aerospace"]
+      },
+      "clearance_facilities": ["TS/SCI", "TS", "Secret"],
+      "contract_vehicles": ["IDIQ", "CPFF", "Firm Fixed Price"]
+    },
+    "Sikorsky": {
+      "programs": ["CH-53K", "VH-92"],
+      "headquarters": "Stratford, CT",
+      "key_locations": ["West Palm Beach, FL", "Troy, AL", "Bridgeport, CT"],
+      "subcontractors": {
+        "CH-53K": ["GE Aviation", "Collins Aerospace", "BAE Systems"],
+        "VH-92": ["GE Aviation", "Collins Aerospace", "BAE Systems"]
+      },
+      "clearance_facilities": ["TS/SCI", "TS", "Secret"],
+      "contract_vehicles": ["IDIQ", "CPFF", "Firm Fixed Price"]
+    }
+  },
+  "subcontractors": {
+    "GE Aviation": {
+      "specialties": ["Aircraft Engines", "Avionics", "Power Systems"],
+      "programs": ["F-35", "CH-53K", "VH-92", "NGAD", "KC-46", "T-7A", "MQ-25", "F/A-18"],
+      "clearance_levels": ["TS", "Secret"]
+    },
+    "Collins Aerospace": {
+      "specialties": ["Avionics", "Flight Controls", "Landing Gear", "Interiors"],
+      "programs": ["F-35", "CH-53K", "VH-92", "NGAD", "KC-46", "T-7A", "MQ-25", "F/A-18"],
+      "clearance_levels": ["TS", "Secret"]
+    },
+    "BAE Systems": {
+      "specialties": ["Electronic Warfare", "Avionics", "Flight Controls"],
+      "programs": ["F-35", "CH-53K", "VH-92", "NGAD", "KC-46", "T-7A", "MQ-25", "F/A-18"],
+      "clearance_levels": ["TS/SCI", "TS", "Secret"]
+    },
+    "Raytheon": {
+      "specialties": ["Radar", "Missiles", "Electronic Warfare", "Sensors"],
+      "programs": ["GBSD", "NGAD", "F/A-18"],
+      "clearance_levels": ["TS/SCI", "TS", "Secret"]
+    },
+    "Pratt & Whitney": {
+      "specialties": ["Aircraft Engines", "Propulsion Systems"],
+      "programs": ["F-35", "B-21"],
+      "clearance_levels": ["TS", "Secret"]
+    },
+    "L3Harris": {
+      "specialties": ["Communications", "Electronic Warfare", "Sensors"],
+      "programs": ["GBSD"],
+      "clearance_levels": ["TS/SCI", "TS", "Secret"]
+    },
+    "Aerojet Rocketdyne": {
+      "specialties": ["Rocket Propulsion", "Missile Systems"],
+      "programs": ["GBSD"],
+      "clearance_levels": ["TS/SCI", "TS", "Secret"]
+    },
+    "Spirit AeroSystems": {
+      "specialties": ["Aircraft Structures", "Composite Manufacturing"],
+      "programs": ["B-21"],
+      "clearance_levels": ["TS", "Secret"]
+    },
+    "Saab": {
+      "specialties": ["Aircraft Design", "Flight Controls"],
+      "programs": ["T-7A"],
+      "clearance_levels": ["TS", "Secret"]
+    },
+    "Honeywell": {
+      "specialties": ["Avionics", "Flight Controls", "Environmental Systems"],
+      "programs": ["KC-46"],
+      "clearance_levels": ["TS", "Secret"]
+    },
+    "Rockwell Collins": {
+      "specialties": ["Avionics", "Communications", "Navigation"],
+      "programs": ["KC-46"],
+      "clearance_levels": ["TS", "Secret"]
+    }
+  },
+  "contract_types": {
+    "IDIQ": "Indefinite Delivery Indefinite Quantity",
+    "CPFF": "Cost Plus Fixed Fee",
+    "CPIF": "Cost Plus Incentive Fee",
+    "Firm Fixed Price": "Fixed Price Contract",
+    "T&M": "Time and Materials"
+  },
+  "clearance_hubs": {
+    "Washington DC": {
+      "companies": ["Northrop Grumman", "Boeing", "Lockheed Martin"],
+      "facilities": ["TS/SCI", "TS", "Secret"]
+    },
+    "San Antonio": {
+      "companies": ["Boeing", "Lockheed Martin", "Collins Aerospace"],
+      "facilities": ["TS/SCI", "TS", "Secret"]
+    },
+    "Colorado Springs": {
+      "companies": ["Northrop Grumman", "Raytheon", "L3Harris"],
+      "facilities": ["TS/SCI", "TS", "Secret"]
+    },
+    "Huntsville": {
+      "companies": ["Boeing", "Lockheed Martin", "Raytheon"],
+      "facilities": ["TS/SCI", "TS", "Secret"]
+    },
+    "Dayton": {
+      "companies": ["Northrop Grumman", "Boeing", "GE Aviation"],
+      "facilities": ["TS/SCI", "TS", "Secret"]
+    }
+  }
+}

@@ -1,0 +1,217 @@
+version: '3.8'
+
+services:
+  # N8N Workflow Automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: primetime-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-admin123}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n_user
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD:-n8n_password}
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=America/New_York
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n_workflows:/home/node/.n8n/workflows
+      - ./data:/home/node/.n8n/data
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - primetime-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: primetime-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=n8n_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-n8n_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - primetime-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: primetime-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - primetime-network
+
+  # Python Scraping Engine
+  scraper-engine:
+    build:
+      context: ./pipelines/scraper_engine
+      dockerfile: Dockerfile
+    container_name: primetime-scraper
+    restart: unless-stopped
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://n8n_user:${POSTGRES_PASSWORD:-n8n_password}@postgres:5432/n8n
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./prompts:/app/prompts
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - primetime-network
+
+  # Mapping Engine
+  mapping-engine:
+    build:
+      context: ./pipelines/mapping_engine
+      dockerfile: Dockerfile
+    container_name: primetime-mapper
+    restart: unless-stopped
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://n8n_user:${POSTGRES_PASSWORD:-n8n_password}@postgres:5432/n8n
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    depends_on:
+      - postgres
+    networks:
+      - primetime-network
+
+  # Organization Chart Engine
+  org-engine:
+    build:
+      context: ./pipelines/org_engine
+      dockerfile: Dockerfile
+    container_name: primetime-org
+    restart: unless-stopped
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://n8n_user:${POSTGRES_PASSWORD:-n8n_password}@postgres:5432/n8n
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./prompts:/app/prompts
+    depends_on:
+      - postgres
+    networks:
+      - primetime-network
+
+  # Playbook Engine
+  playbook-engine:
+    build:
+      context: ./pipelines/playbook_engine
+      dockerfile: Dockerfile
+    container_name: primetime-playbook
+    restart: unless-stopped
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://n8n_user:${POSTGRES_PASSWORD:-n8n_password}@postgres:5432/n8n
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./prompts:/app/prompts
+      - ./outputs:/app/outputs
+    depends_on:
+      - postgres
+    networks:
+      - primetime-network
+
+  # Scoring Engine
+  scoring-engine:
+    build:
+      context: ./pipelines/scoring_engine
+      dockerfile: Dockerfile
+    container_name: primetime-scoring
+    restart: unless-stopped
+    environment:
+      - POSTGRES_CONNECTION_STRING=postgresql://n8n_user:${POSTGRES_PASSWORD:-n8n_password}@postgres:5432/n8n
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./outputs:/app/outputs
+    depends_on:
+      - postgres
+    networks:
+      - primetime-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: primetime-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/ssl:/etc/nginx/ssl
+    depends_on:
+      - n8n
+    networks:
+      - primetime-network
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: primetime-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - primetime-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: primetime-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - primetime-network
+
+volumes:
+  n8n_data:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  primetime-network:
+    driver: bridge

@@ -1,0 +1,127 @@
+{
+  "programs": {
+    "GBSD": {
+      "full_name": "Ground Based Strategic Deterrent",
+      "acronyms": ["GBSD", "Ground Based Strategic Deterrent"],
+      "code_names": ["Sentinel"],
+      "prime_contractor": "Northrop Grumman",
+      "contract_value": "13.3B",
+      "clearance_levels": ["TS/SCI", "TS", "Secret"],
+      "locations": ["Utah", "Wyoming", "Montana", "North Dakota", "Colorado", "Nebraska"],
+      "key_skills": ["ICBM", "Nuclear", "Strategic", "Deterrent", "Minuteman", "LGM-30", "LGM-35A"]
+    },
+    "NGAD": {
+      "full_name": "Next Generation Air Dominance",
+      "acronyms": ["NGAD", "Next Generation Air Dominance"],
+      "code_names": ["F-X", "Penetrating Counter Air"],
+      "prime_contractor": "Boeing",
+      "contract_value": "1.6B",
+      "clearance_levels": ["TS/SCI", "TS"],
+      "locations": ["Washington", "California", "Missouri"],
+      "key_skills": ["6th Gen Fighter", "Air Dominance", "Stealth", "Advanced Avionics", "AI/ML"]
+    },
+    "B-21": {
+      "full_name": "B-21 Raider",
+      "acronyms": ["B-21", "B21", "Raider"],
+      "code_names": ["LRS-B", "Long Range Strike Bomber"],
+      "prime_contractor": "Northrop Grumman",
+      "contract_value": "23.5B",
+      "clearance_levels": ["TS/SCI", "TS"],
+      "locations": ["California", "Utah", "Florida"],
+      "key_skills": ["Stealth Bomber", "Long Range Strike", "Nuclear Capable", "Advanced Materials"]
+    },
+    "F-35": {
+      "full_name": "F-35 Lightning II",
+      "acronyms": ["F-35", "F35", "Lightning II", "JSF"],
+      "code_names": ["Joint Strike Fighter"],
+      "prime_contractor": "Lockheed Martin",
+      "contract_value": "1.7T",
+      "clearance_levels": ["TS/SCI", "TS", "Secret"],
+      "locations": ["Texas", "California", "Florida", "Connecticut"],
+      "key_skills": ["5th Gen Fighter", "Stealth", "Multi-Role", "Sensor Fusion", "DAS"]
+    },
+    "KC-46": {
+      "full_name": "KC-46 Pegasus",
+      "acronyms": ["KC-46", "KC46", "Pegasus"],
+      "code_names": ["KC-X"],
+      "prime_contractor": "Boeing",
+      "contract_value": "4.9B",
+      "clearance_levels": ["TS", "Secret"],
+      "locations": ["Washington", "Kansas", "Oklahoma"],
+      "key_skills": ["Aerial Refueling", "Tanker", "Boeing 767", "Remote Vision System"]
+    },
+    "T-7A": {
+      "full_name": "T-7A Red Hawk",
+      "acronyms": ["T-7A", "T7A", "Red Hawk"],
+      "code_names": ["T-X"],
+      "prime_contractor": "Boeing",
+      "contract_value": "9.2B",
+      "clearance_levels": ["TS", "Secret"],
+      "locations": ["Missouri", "Illinois"],
+      "key_skills": ["Advanced Trainer", "Pilot Training", "Boeing-Saab", "Digital Design"]
+    },
+    "CH-53K": {
+      "full_name": "CH-53K King Stallion",
+      "acronyms": ["CH-53K", "CH53K", "King Stallion"],
+      "code_names": ["Heavy Lift Replacement"],
+      "prime_contractor": "Sikorsky",
+      "contract_value": "25.2B",
+      "clearance_levels": ["TS", "Secret"],
+      "locations": ["Connecticut", "Florida"],
+      "key_skills": ["Heavy Lift Helicopter", "Marine Corps", "Sikorsky", "Advanced Avionics"]
+    },
+    "VH-92": {
+      "full_name": "VH-92 Presidential Helicopter",
+      "acronyms": ["VH-92", "VH92"],
+      "code_names": ["Marine One", "Presidential Helicopter"],
+      "prime_contractor": "Sikorsky",
+      "contract_value": "5.0B",
+      "clearance_levels": ["TS/SCI", "TS"],
+      "locations": ["Connecticut", "Maryland"],
+      "key_skills": ["Presidential Transport", "Marine One", "Executive Transport", "Sikorsky S-92"]
+    },
+    "MQ-25": {
+      "full_name": "MQ-25 Stingray",
+      "acronyms": ["MQ-25", "MQ25", "Stingray"],
+      "code_names": ["CBARS", "Carrier-Based Aerial Refueling System"],
+      "prime_contractor": "Boeing",
+      "contract_value": "13.0B",
+      "clearance_levels": ["TS/SCI", "TS"],
+      "locations": ["Missouri", "Illinois"],
+      "key_skills": ["Carrier-Based UAV", "Aerial Refueling", "Navy", "Autonomous"]
+    },
+    "F/A-18": {
+      "full_name": "F/A-18 Super Hornet",
+      "acronyms": ["F/A-18", "FA18", "Super Hornet"],
+      "code_names": ["Rhino"],
+      "prime_contractor": "Boeing",
+      "contract_value": "4.9B",
+      "clearance_levels": ["TS", "Secret"],
+      "locations": ["Missouri", "California"],
+      "key_skills": ["Multi-Role Fighter", "Carrier-Based", "Navy", "Marine Corps"]
+    }
+  },
+  "clearance_levels": {
+    "TS/SCI": {
+      "description": "Top Secret/Sensitive Compartmented Information",
+      "requirements": ["TS clearance", "SCI access", "Polygraph", "Background investigation"]
+    },
+    "TS": {
+      "description": "Top Secret",
+      "requirements": ["Background investigation", "SSBI", "Loyalty determination"]
+    },
+    "Secret": {
+      "description": "Secret",
+      "requirements": ["Background investigation", "NACLC"]
+    },
+    "Confidential": {
+      "description": "Confidential",
+      "requirements": ["Background investigation", "NACLC"]
+    }
+  },
+  "locations": {
+    "primary_states": ["California", "Texas", "Washington", "Florida", "Virginia", "Maryland"],
+    "secondary_states": ["Missouri", "Connecticut", "Utah", "Colorado", "Arizona", "Georgia"],
+    "clearance_hubs": ["Washington DC", "San Antonio", "Colorado Springs", "Huntsville", "Dayton"]
+  }
+}

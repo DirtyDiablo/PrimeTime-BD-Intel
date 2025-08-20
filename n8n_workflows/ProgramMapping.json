@@ -1,0 +1,299 @@
+{
+  "name": "Program Mapping Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hour",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM jobs_raw WHERE program_mapped = false AND scraped_at >= NOW() - INTERVAL '24 hours' ORDER BY scraped_at DESC LIMIT 50",
+        "options": {}
+      },
+      "id": "postgres-query",
+      "name": "Get Unmapped Jobs",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "operation": "splitInBatches",
+        "batchSize": 10,
+        "options": {}
+      },
+      "id": "split-batches",
+      "name": "Split into Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "operation": "completion",
+        "model": "gpt-4-turbo-preview",
+        "prompt": "Analyze the following job posting and determine which defense program(s) it's most likely associated with. Consider the job title, company, location, clearance level, and description.\n\nJob Details:\nTitle: {{ $json.title }}\nCompany: {{ $json.company }}\nLocation: {{ $json.location }}\nClearance Level: {{ $json.clearance_level }}\nDescription: {{ $json.description }}\n\nAvailable Programs:\n- GBSD (Ground Based Strategic Deterrent): ICBM, nuclear, strategic deterrent, Minuteman, LGM-30, LGM-35A\n- NGAD (Next Generation Air Dominance): 6th gen, air dominance, penetrating counter air, F-X\n- B-21 (B-21 Raider): stealth bomber, long range strike, LRS-B, Raider\n- F-35 (F-35 Lightning II): 5th gen fighter, JSF, Lightning II, stealth\n- KC-46 (KC-46 Pegasus): aerial refueling, tanker, Pegasus, KC-X\n- T-7A (T-7A Red Hawk): trainer, Red Hawk, T-X, pilot training\n- CH-53K (CH-53K King Stallion): heavy lift, King Stallion, helicopter, Marine Corps\n- VH-92 (VH-92 Presidential Helicopter): presidential helicopter, Marine One, executive transport\n- MQ-25 (MQ-25 Stingray): carrier-based, UAV, aerial refueling, Stingray\n- F/A-18 (F/A-18 Super Hornet): Super Hornet, multi-role fighter, carrier-based\n\nReturn a JSON response with:\n{\n  \"programs\": [\"program_code\"],\n  \"confidence\": 0.95,\n  \"reasoning\": \"explanation of why this job maps to these programs\",\n  \"keywords_found\": [\"keyword1\", \"keyword2\"]\n}\n\nIf no clear program match is found, return:\n{\n  \"programs\": [],\n  \"confidence\": 0.0,\n  \"reasoning\": \"No clear program match found\",\n  \"keywords_found\": []\n}",
+        "options": {
+          "maxTokens": 1000,
+          "temperature": 0.1
+        }
+      },
+      "id": "openai-analysis",
+      "name": "AI Program Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse OpenAI response and combine with job data\nconst aiResponse = JSON.parse($input.first().json.text);\nconst jobData = $input.first().json;\n\nreturn {\n  job_id: jobData.job_id,\n  title: jobData.title,\n  company: jobData.company,\n  location: jobData.location,\n  clearance_level: jobData.clearance_level,\n  mapped_programs: aiResponse.programs,\n  confidence_score: aiResponse.confidence,\n  reasoning: aiResponse.reasoning,\n  keywords_found: aiResponse.keywords_found,\n  mapped_at: new Date().toISOString()\n};"
+      },
+      "id": "parse-response",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "confidence-threshold",
+              "leftValue": "={{ $json.confidence_score }}",
+              "rightValue": 0.7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "programs-found",
+              "leftValue": "={{ $json.mapped_programs.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "confidence-filter",
+      "name": "Filter High Confidence",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO jobs_enriched (job_id, title, company, location, clearance_level, mapped_programs, confidence_score, reasoning, keywords_found, mapped_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (job_id) DO UPDATE SET mapped_programs = $6, confidence_score = $7, reasoning = $8, keywords_found = $9, mapped_at = $10",
+        "options": {
+          "queryReplacement": "={{ $json.job_id }}, {{ $json.title }}, {{ $json.company }}, {{ $json.location }}, {{ $json.clearance_level }}, {{ JSON.stringify($json.mapped_programs) }}, {{ $json.confidence_score }}, {{ $json.reasoning }}, {{ JSON.stringify($json.keywords_found) }}, {{ $json.mapped_at }}"
+        }
+      },
+      "id": "store-enriched",
+      "name": "Store Enriched Jobs",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE jobs_raw SET program_mapped = true, mapped_at = NOW() WHERE job_id = $1",
+        "options": {
+          "queryReplacement": "={{ $json.job_id }}"
+        }
+      },
+      "id": "update-raw-status",
+      "name": "Update Raw Job Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO program_jobs (program_code, job_id, confidence_score, mapped_at) VALUES ($1, $2, $3, $4) ON CONFLICT (program_code, job_id) DO UPDATE SET confidence_score = $3, mapped_at = $4",
+        "options": {
+          "queryReplacement": "={{ $json.mapped_programs[0] }}, {{ $json.job_id }}, {{ $json.confidence_score }}, {{ $json.mapped_at }}"
+        }
+      },
+      "id": "store-program-mapping",
+      "name": "Store Program Mapping",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [2000, 200]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "toEmail": "{{ $env.NOTIFICATION_EMAIL }}",
+        "subject": "Program Mapping Results",
+        "text": "={{ 'Program Mapping Engine: Processed ' + $json.length + ' jobs. High confidence mappings: ' + $json.filter(job => job.confidence_score >= 0.8).length }}",
+        "options": {}
+      },
+      "id": "email-notification",
+      "name": "Email Results",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [2220, 200]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "toEmail": "{{ $env.ADMIN_EMAIL }}",
+        "subject": "Program Mapping Error",
+        "text": "={{ 'Error in Program Mapping Engine: ' + $json.error }}",
+        "options": {}
+      },
+      "id": "error-email",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1560, 400]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Unmapped Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Unmapped Jobs": {
+      "main": [
+        [
+          {
+            "node": "Split into Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split into Batches": {
+      "main": [
+        [
+          {
+            "node": "AI Program Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Program Analysis": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Filter High Confidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter High Confidence": {
+      "main": [
+        [
+          {
+            "node": "Store Enriched Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Enriched Jobs": {
+      "main": [
+        [
+          {
+            "node": "Update Raw Job Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Raw Job Status": {
+      "main": [
+        [
+          {
+            "node": "Store Program Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Program Mapping": {
+      "main": [
+        [
+          {
+            "node": "Email Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "program-mapping",
+      "name": "Program Mapping"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}
