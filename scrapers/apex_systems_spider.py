@@ -251,3 +251,4 @@ if __name__ == "__main__":
     process = CrawlerProcess(get_project_settings())
     process.crawl(ApexSystemsSpider)
     process.start()
+

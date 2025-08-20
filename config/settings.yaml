@@ -256,3 +256,4 @@ backup:
   # Backup storage
   backup_storage_type: "local"  # local, s3, gcs
   backup_storage_path: "./backups"
+
