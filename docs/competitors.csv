@@ -1,0 +1,3 @@
+company,req_id_or_ref,title,location_city,location_state,clearance_required,tool_stack,shift,pay_min,pay_max,posted_date,repost_flag,url,notes
+TEKsystems,,Service Desk Analyst,Augusta,GA,Secret,ServiceNow,Night,0,0,2025-08-06,True,https://example.com/teksystems-job,Same geo as Fort Eisenhower; wedge opportunity
+Insight Global,,Help Desk Technician,Adelphi,MD,Secret,ServiceNow;Active Directory,Day,28,36,2025-08-05,False,https://example.com/insightglobal-job,Rate anchor for SD Tech in ARL market ($/hr)

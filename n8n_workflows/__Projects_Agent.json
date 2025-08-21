@@ -1,0 +1,295 @@
+{
+  "name": "🤖Projects Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7d0c0eb5-e7d4-4acb-ac1b-ebb4cc32f335",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        600,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "e64d2789-4e55-446a-8028-8cfe021d027f",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        680,
+        540
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "PI7dqswJpx1Asynn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17rTnGg9telKLqqWrNlyzngatwyVYUwn9eXkQLBtJ-Ys",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17rTnGg9telKLqqWrNlyzngatwyVYUwn9eXkQLBtJ-Ys/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17rTnGg9telKLqqWrNlyzngatwyVYUwn9eXkQLBtJ-Ys/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "3cab8cd8-5150-4985-940f-f3f40cbdcbf6",
+      "name": "Get Projects",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        860,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DKJyEjZyGh00GFMv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17rTnGg9telKLqqWrNlyzngatwyVYUwn9eXkQLBtJ-Ys",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17rTnGg9telKLqqWrNlyzngatwyVYUwn9eXkQLBtJ-Ys/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17rTnGg9telKLqqWrNlyzngatwyVYUwn9eXkQLBtJ-Ys/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Project": "={{ $fromAI(\"project\") }}",
+            "Notes": "={{ $fromAI(\"notes\") }}",
+            "Status": "={{ $fromAI(\"status\") }}"
+          },
+          "matchingColumns": [
+            "Project"
+          ],
+          "schema": [
+            {
+              "id": "Project",
+              "displayName": "Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5cd7f6c6-a034-41bb-9c39-575bf62cd926",
+      "name": "Update Projects",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        1020,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DKJyEjZyGh00GFMv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ab380a2-a8d3-421c-ab4e-748ea8fb7904",
+              "name": "response",
+              "value": "Unable to perform task. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b3f8c9ae-250e-41c0-abf0-00169c56a198",
+      "name": "Try Again",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1320,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39c2f302-03be-4464-a17a-d7cc481d6d44",
+              "name": "=response",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f2e72023-333e-4fe6-aeab-e47befd22ae1",
+      "name": "Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1320,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.query}}",
+        "options": {
+          "systemMessage": "=You are a google sheets agent. Your job is to take the user query and decide which tool to use to get the job done. \n\nYour tools:\nAdd Contact\nUse this tool to add a contact to the contact database\n\nUpdate Contact\nUse this tool to update a row for a specific contact. The fields for a contact are Name, Email, and Phone Number. If not all of these are specified to update, then keep them as they are. Example, if we want to update Nate Herk's email, pass along the updated email, but keep the current Name and Phone Number the same. \n\nGet Projects\nUse this tool to get project information and summarize it.\n\nUpdate Projects\nUse this tool to update a row for a specific contact. The fields for a contact are Project, Notes, and Status. If not all of these are specified to update, then keep them as they are. "
+        }
+      },
+      "id": "40102d9a-6758-4a86-a839-b7643e629233",
+      "name": "Projects Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        840,
+        340
+      ],
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Projects Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Projects Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Projects": {
+      "ai_tool": [
+        [
+          {
+            "node": "Projects Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Projects": {
+      "ai_tool": [
+        [
+          {
+            "node": "Projects Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Projects Agent": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c8a4fec6-30cd-4db2-b0a6-132cfda47051",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "95e5a8c2e51c83e33b232ea792bbe3f063c094c33d9806a5565cb31759e1ad39"
+  },
+  "id": "3Hkxr6wonWWvR9jB",
+  "tags": []
+}

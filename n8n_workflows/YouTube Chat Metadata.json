@@ -1,0 +1,1089 @@
+{
+  "name": "YouTube Chat Metadata",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "YouTube Database Submission",
+        "formDescription": "Drop in a YouTube video URL",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Video Title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "URL",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -200,
+        -20
+      ],
+      "id": "9107b9d6-c694-4714-99ea-5f1a90d8922c",
+      "name": "On form submission",
+      "webhookId": "a9dcfcaa-c800-4000-81df-2a142df4732e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/pintostudio~youtube-transcript-scraper/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "Your API API Token"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "videoUrl",
+              "value": "={{ $json.URL }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        -20
+      ],
+      "id": "ff352ab6-bbe0-4101-8f52-105279abdfab",
+      "name": "Get Transcript"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        520,
+        -20
+      ],
+      "id": "314d87d8-1304-4cc1-9573-6026f829d30b",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ujFIrt3vyGsie6vW",
+          "name": "7/11/25"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        500,
+        120
+      ],
+      "id": "0352a773-2824-45b1-8ea8-deb4a412adc7",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "WnxUhaEPMn5hIsEp",
+          "name": "Demo 4/2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('Merge').item.json.text }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "videoTitle",
+                "value": "={{ $('On form submission').first().json['Video Title'] }}"
+              },
+              {
+                "name": "timestamp",
+                "value": "={{ $('Merge').item.json.timestamp.startFormatted }}-{{ $('Merge').item.json.timestamp.endFormatted }}"
+              },
+              {
+                "name": "videoURL",
+                "value": "={{ $('On form submission').item.json.URL }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        120
+      ],
+      "id": "d09391e2-5f17-4bf3-879a-fa91fc3d40ce",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -540
+      ],
+      "id": "94d86c60-ee26-42a9-9aa5-4e8328ab58c9",
+      "name": "When chat message received",
+      "webhookId": "89df1a57-f248-4a00-8515-48bae1ce1b74"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -380
+      ],
+      "id": "212f70a2-36d0-492d-92ff-e10e7e9b2efa",
+      "name": "GPT 4.1-mini",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to search through YouTube transcripts to answer the user's question.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 20,
+        "useReranker": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        420,
+        -520
+      ],
+      "id": "350ecbaa-201d-4864-a912-1c740b472c69",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ujFIrt3vyGsie6vW",
+          "name": "7/11/25"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc",
+          "mode": "list",
+          "cachedResultName": "YouTube Videos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('On form submission').item.json['Video Title'] }}",
+            "URL": "={{ $('On form submission').item.json.URL }}",
+            "Status": "Processed",
+            "Transcript": "={{ $('Transcript').first().json.combinedText }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        820,
+        -20
+      ],
+      "id": "832614e3-da4f-4a7a-8bc8-d3712ce769a7",
+      "name": "Append row in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "s7PIUa59FFmDLn1e",
+          "name": "Demo 4/2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node - Combine transcript text into one string (no newlines)\n\n// Get the input data (first item from the input)\nconst inputData = $input.all()[0].json;\n\n// Extract the data array\nconst transcriptData = inputData.data;\n\n// Filter out items that don't have text and combine all text segments\nconst combinedText = transcriptData\n  .filter(item => item.text) // Only include items with text property\n  .map(item => item.text.trim().replace(/\\n/g, ' ')) // Get the text, trim whitespace, and replace newlines with spaces\n  .join(' ') // Join with spaces\n  .replace(/\\s+/g, ' '); // Replace multiple spaces with single space\n\n// Return the combined text as a single item\nreturn [\n  {\n    json: {\n      combinedText: combinedText,\n      originalItemCount: transcriptData.length,\n      textSegmentCount: transcriptData.filter(item => item.text).length\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -100
+      ],
+      "id": "581d36a0-b462-4a74-a96f-cf8519aa3559",
+      "name": "Transcript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node - Group transcript into chunks of 20 with timestamps\n\n// Get the input data (first item from the input)\nconst inputData = $input.all()[0].json;\n\n// Extract the data array and filter out items without text\nconst transcriptData = inputData.data.filter(item => item.text);\n\n// Group into chunks of 20\nconst chunkSize = 20;\nconst chunks = [];\n\nfor (let i = 0; i < transcriptData.length; i += chunkSize) {\n  const chunk = transcriptData.slice(i, i + chunkSize);\n  \n  // Combine all text from this chunk\n  const combinedText = chunk\n    .map(item => item.text.trim())\n    .join(' ');\n  \n  // Calculate timestamp range\n  const firstItem = chunk[0];\n  const lastItem = chunk[chunk.length - 1];\n  \n  const startTime = parseFloat(firstItem.start);\n  const endTime = parseFloat(lastItem.start) + parseFloat(lastItem.dur);\n  \n  // Helper function to format seconds to MM:SS format\n  const formatTime = (seconds) => {\n    if (seconds < 60) {\n      return `${seconds.toFixed(3)}s`;\n    }\n    const minutes = Math.floor(seconds / 60);\n    const remainingSeconds = seconds % 60;\n    return `${minutes}:${remainingSeconds.toFixed(3).padStart(6, '0')}`;\n  };\n  \n  // Create the grouped object\n  chunks.push({\n    json: {\n      text: combinedText,\n      timestamp: {\n        start: startTime,\n        end: endTime,\n        duration: endTime - startTime,\n        startFormatted: formatTime(startTime),\n        endFormatted: formatTime(endTime),\n        durationFormatted: formatTime(endTime - startTime)\n      },\n      itemCount: chunk.length,\n      chunkNumber: Math.floor(i / chunkSize) + 1\n    }\n  });\n}\n\n// Return all chunks as separate items\nreturn chunks;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        80
+      ],
+      "id": "74960c7c-53ef-4c43-a466-9829234439d4",
+      "name": "Timestamps"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        340,
+        -20
+      ],
+      "id": "e5891406-905d-42ca-8c5a-287470d8626d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc",
+          "mode": "list",
+          "cachedResultName": "YouTube Videos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc/edit#gid=0"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "Status"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        480
+      ],
+      "id": "75593e85-057b-4e0b-8ccf-b738ae51b142",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "3PRLXWtdlj76aVY7",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dd6297c2-fadf-440d-aa41-5a3772767cca",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Remove",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -20,
+        480
+      ],
+      "id": "a763cf4b-adae-4e73-80d2-b627a474301b",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>videoURL=like.*{{ $json.url }}"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        580,
+        480
+      ],
+      "id": "3da0cdba-d0de-4375-92e5-6ea593d291b3",
+      "name": "Delete a row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "ujFIrt3vyGsie6vW",
+          "name": "7/11/25"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc",
+          "mode": "list",
+          "cachedResultName": "YouTube Videos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ur4YOjXHSG30KZvxZHzHbANO-udaZ5wKzaKlxQiCYAc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "URL": "={{ $('Edit Fields').item.json.url }}",
+            "Status": "Removed"
+          },
+          "matchingColumns": [
+            "URL"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        760,
+        480
+      ],
+      "id": "935519f5-b01e-4716-a637-91cae98f491e",
+      "name": "Update row in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "s7PIUa59FFmDLn1e",
+          "name": "Demo 4/2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a819cb4c-30ff-4d23-b176-a2d7a77f91e9",
+              "name": "url",
+              "value": "={{ $json.URL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        480
+      ],
+      "id": "caa58886-927b-45fa-9b80-35266b633833",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        180,
+        480
+      ],
+      "id": "ae80022f-9d60-4034-89f1-c6a117d62403",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        -380
+      ],
+      "id": "48a6e600-18c3-41e6-af1d-0cacfa2549c5",
+      "name": "GPT 4.1-mini1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1580,
+        -400
+      ],
+      "id": "847d528a-ef29-47cd-9b7d-4b1000cdd088",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "WnxUhaEPMn5hIsEp",
+          "name": "Demo 4/2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.Query }} from {{ $json['Video Title'] }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI assistant with access to a tool called Supabase, which contains transcripts of YouTube videos.\n\nWhen the user asks a question, you may query Supabase multiple times to gather the most relevant information. Use these results to generate a complete and accurate answer.\n\nFor every fact, insight, or quote you include, explicitly cite the video title, timestamp, and video URL, all of which are available in the metadata. Include direct quotes from the transcript when helpful, and always cite sources inline in this format:\n“quoted content” (Video Title, 03:12 — Watch here)\n\nQuery iteratively until you are confident you have enough context to respond helpfully."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -540
+      ],
+      "id": "cd2fe151-aea8-40f0-8c53-428f8a3df8f7",
+      "name": "RAG Agent 2"
+    },
+    {
+      "parameters": {
+        "formTitle": "Video Insights",
+        "formDescription": "Specify the YouTube Video you want insights from",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Video Title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Query",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        -540
+      ],
+      "id": "fe7c0847-d3aa-4869-8147-0925057c47bf",
+      "name": "On form submission1",
+      "webhookId": "a3637fd4-c86e-443c-b3e6-d901f44c1c40"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to search through YouTube transcripts to answer the user's question.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "videoTitle",
+                "value": "={{ $('On form submission1').item.json['Video Title'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1560,
+        -540
+      ],
+      "id": "fda26a95-4605-4074-be99-17c602cfd9eb",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ujFIrt3vyGsie6vW",
+          "name": "7/11/25"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# YouTube Transcript RAG Agent\n",
+        "height": 460,
+        "width": 1120,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -680
+      ],
+      "id": "e16234f7-a9f2-426d-a4f9-ec263719c54d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# YouTube Transcript RAG Agent\n## w/ metadata filter\n",
+        "height": 460,
+        "width": 1120
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        860,
+        -680
+      ],
+      "id": "d1d12d83-a2d5-4311-90b6-c76d4ce21323",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Transcript Pipeline",
+        "height": 480,
+        "width": 1300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -200
+      ],
+      "id": "16c4a37f-c954-42de-ba22-ed15c942507b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Transcript Pipeline\n## Delete\n",
+        "height": 480,
+        "width": 1300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        300
+      ],
+      "id": "b7fca98a-cc20-442d-9813-b789751fb8cc",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -400
+      ],
+      "id": "e9a85cd8-bb31-4699-beb9-b90cab817580",
+      "name": "Embedding",
+      "credentials": {
+        "openAiApi": {
+          "id": "WnxUhaEPMn5hIsEp",
+          "name": "Demo 4/2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        600,
+        -400
+      ],
+      "id": "9ff03d38-a855-4d7c-bdf5-76949ac7d706",
+      "name": "Reranker",
+      "credentials": {
+        "cohereApi": {
+          "id": "vCsqiDhFNdSGhDKu",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI assistant with access to a tool called Supabase, which contains transcripts of YouTube videos.\n\nWhen the user asks a question, you may query Supabase multiple times to gather the most relevant information. Use these results to generate a complete and accurate answer.\n\nFor every fact, insight, or quote you include, explicitly cite the video title, timestamp, and video URL, all of which are available in the metadata. Include direct quotes from the transcript when helpful, and always cite sources inline in this format:\n“quoted content” (Video Title, 03:12 — Watch here)\n\nQuery iteratively until you are confident you have enough context to respond helpfully."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        40,
+        -540
+      ],
+      "id": "06d1a4c5-cb2a-48f6-ac8a-c7a500964d7f",
+      "name": "YouTube RAG Agent"
+    },
+    {
+      "parameters": {
+        "content": "# 🛠️ Setup Guide  \n**Author:** [Nate Herk](https://www.youtube.com/@nateherk)\n\nFollow these steps to get your workflow ready to chat with video transcripts and enriched metadata:\n\n### ✅ Step 1: Connect Your Credentials  \nEnsure you have the following credentials connected in n8n:\n- [OpenRouter](https://openrouter.ai/)\n- [OpenAI](https://platform.openai.com/)\n- [Cohere](https://cohere.com/)\n- [Supabase](https://supabase.com/)\n\nThese will power your chat model, embedding model, and vector database.\n\n### ✅ Step 2: Connect to [Apify](https://www.apify.com?fpr=nate)  \nUse Apify to scrape YouTube transcripts and store them into your vector DB.  \n🎟️ Use code `30NATEHERK` for **30% off 3 months** of Apify.\n\n### ✅ Step 3: Link Your Google Sheets  \nConnect your Google credentials and use this [Google Sheets template](https://docs.google.com/spreadsheets/d/1KXoxjtFEpQrIiCW1aSKeK99usK4c5_QpwpMZek15-mQ/edit?usp=sharing).  \nHook it up to n8n so it tracks and organizes your data cleanly.\n\n### 💡 Final Step: Start Testing  \nRun the workflow with your connected data and start chatting with enriched transcripts.  \nTry out metadata filtering and chunk enhancement to see how powerful this setup can be!\n",
+        "height": 680,
+        "width": 680
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        -680
+      ],
+      "id": "2d0c4fb4-3714-4547-b685-7eca55fdaa54",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Get Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transcript": {
+      "main": [
+        [
+          {
+            "node": "Transcript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Timestamps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "YouTube RAG Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 4.1-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "YouTube RAG Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "ai_tool": [
+        [
+          {
+            "node": "YouTube RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Timestamps": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a row": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Delete a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 4.1-mini1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG Agent 2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent 2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embedding": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Supabase",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "484e6be4-d12e-4f07-985c-191ee0865ba7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "95e5a8c2e51c83e33b232ea792bbe3f063c094c33d9806a5565cb31759e1ad39"
+  },
+  "id": "pqkkqdPaOQ8Kv8f6",
+  "tags": []
+}

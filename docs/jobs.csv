@@ -1,0 +1,3 @@
+req_id,title,classification,program_hint,company,location_city,location_state,remote_flag,clearance_required,8570_reqs,tool_stack,shift,pay_min,pay_max,pay_currency,posted_date,repost_flag,url,source,last_seen_utc,notes
+SAIC-12345,Service Desk Manager,Probable AESD,AESMP,SAIC,Aberdeen,MD,False,Secret,Security+;CE,ServiceNow;SCCM;ACAS,Day,85000,95000,USD,2025-08-08,True,https://careers.saic.com/job/SAIC-12345,SAIC_Careers,2025-08-08T18:28:23Z,Army lab footprint
+SAIC-98765,Service Desk Technician (Tier 2),Confirmed AESD,AESD,SAIC,Adelphi,MD,False,Secret,Security+,ServiceNow;MECM;Active Directory,Night,65000,78000,USD,2025-08-07,False,https://careers.saic.com/job/SAIC-98765,SAIC_Careers,2025-08-08T18:28:23Z,24x7 coverage; shift gap signal

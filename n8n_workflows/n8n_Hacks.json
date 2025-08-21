@@ -1,0 +1,1695 @@
+{
+  "name": "n8n Hacks",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d0ec2c2-c3f9-4a2c-991f-fd1c54d578a4",
+              "name": "testt",
+              "value": "hello",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        20,
+        -1000
+      ],
+      "id": "816c3201-d543-442c-9ae7-c2ba896b5fda",
+      "name": "1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        -1000
+      ],
+      "id": "a232a2d5-dec0-4b18-a78f-9374da246e83",
+      "name": "2",
+      "webhookId": "2558286d-2008-4723-8030-651c314b162a"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Hello"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        300,
+        -1000
+      ],
+      "id": "9fd3cab8-c4c5-4db8-9e1d-e6e3be1bad0a",
+      "name": "3",
+      "credentials": {
+        "openAiApi": {
+          "id": "WnxUhaEPMn5hIsEp",
+          "name": "Demo 4/2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        220,
+        -1360
+      ],
+      "id": "f559e95c-73af-4a80-9476-7e7d687568eb",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"sonar\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Be precise and concise.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"What is n8n?\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        120,
+        -1700
+      ],
+      "id": "dc1a10a6-9031-4479-b664-b3a24c1f3a5e",
+      "name": "Perplexity",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w02NtJaxGUBYqlmc",
+          "name": "Perplexity"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 2) Pin Data",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -1820
+      ],
+      "id": "b25594de-d3e0-4f3c-9fba-0b268812f989",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "552691fc-d12f-4a25-8db6-afb76eed81c5",
+              "name": "Answer",
+              "value": "={{ $json.choices[0].message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        360,
+        -1700
+      ],
+      "id": "27475e16-9037-4d78-8257-38e173c3006e",
+      "name": "Answer",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "content": "# 4) Move Between Nodes\n",
+        "height": 340,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -1140
+      ],
+      "id": "88d16969-b088-4730-bc24-6e7cd3be8223",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# 10) Current Date/Time\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        600
+      ],
+      "id": "b4eeacc8-5085-43c3-a1be-2d0906f8c216",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        20,
+        740
+      ],
+      "id": "96da06ad-c36e-4608-af92-2a3e78fe4668",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current Time is: {{ $now.format('yyyy-MM-dd') }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        180,
+        700
+      ],
+      "id": "2084b0b2-0035-482a-b9b6-f4b9ab617388",
+      "name": "Current Time"
+    },
+    {
+      "parameters": {
+        "content": "# 1) Fixed -> Expression",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -2160
+      ],
+      "id": "0b119ee5-3432-4306-a425-a783fce92f11",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "552691fc-d12f-4a25-8db6-afb76eed81c5",
+              "name": "=",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -2040
+      ],
+      "id": "31daa0df-a04b-4d01-a00b-ef462d3c3378",
+      "name": "Expression"
+    },
+    {
+      "parameters": {
+        "content": "# 25 n8n Hacks\nAuthor: [Nate Herk](https://www.youtube.com/@nateherk) ",
+        "height": 100,
+        "width": 720,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -2280
+      ],
+      "id": "c1ea7e7d-2674-44c7-a3ab-a8d18f4c2044",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# 11) Save Credentials\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        940
+      ],
+      "id": "fced0fd1-caac-44eb-bf86-7b019b36cdc7",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"sonar\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Be precise and concise.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"What is n8n?\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        60,
+        1060
+      ],
+      "id": "49fc08e2-d685-4d82-adb4-4814ab889109",
+      "name": "Perplexity1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w02NtJaxGUBYqlmc",
+          "name": "Perplexity"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.query }}\",\n  \"topic\": \"general\",\n  \"search_depth\": \"basic\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 1,\n  \"time_range\": null,\n  \"days\": 7,\n  \"include_answer\": true,\n  \"include_raw_content\": false,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": []\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        1060
+      ],
+      "id": "d7c344b8-6713-47cc-8a62-4036fe47406c",
+      "name": "Tavily",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1Gs5ooRQh4ZYMIK6",
+          "name": "Tavily Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-image-1"
+            },
+            {
+              "name": "prompt",
+              "value": "A cute baby sea otter"
+            },
+            {
+              "name": "size",
+              "value": "1024x1024"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        1060
+      ],
+      "id": "8f09d9a8-ee10-4b7d-a54b-0c690826c4bf",
+      "name": "OpenAI",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nVtVq90r4W2Ta5ai",
+          "name": "OpenAI Image"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 24) .join()\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        5040
+      ],
+      "id": "9796164c-d345-45a5-8459-dfc35f252412",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f18f458-174c-4756-acf6-a8d9cb04e072",
+              "name": "foods",
+              "value": "[\"apple\",\"banana\",\"steak\"]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        140,
+        5160
+      ],
+      "id": "59142d3e-f6ed-41cf-bddb-f0c7ed4c1e0d",
+      "name": "Array"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc21d18c-dd1b-4b18-ae8e-f883542ff2a1",
+              "name": "list",
+              "value": "={{ $json.foods.join(\"\\n\\n\\n\\n\\n\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        360,
+        5160
+      ],
+      "id": "5a35131e-8247-4950-9610-66d541d4cc42",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "# 25) .replace(/\"/g, '')\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        5380
+      ],
+      "id": "af903432-8dd8-40c9-a437-d06ecc57564d",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f7a5a6a-d14e-4e29-b81e-30e24a059c38",
+              "name": "query",
+              "value": "\"pineapples on pizza\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        140,
+        5500
+      ],
+      "id": "1bf75ae9-8718-42ef-a33e-5504e6afaf46",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"{{ $json.query.replace(/\"/g, '') }}\",\n  \"topic\": \"general\",\n  \"search_depth\": \"basic\",\n  \"chunks_per_source\": 3,\n  \"max_results\": 1,\n  \"time_range\": null,\n  \"days\": 7,\n  \"include_answer\": true,\n  \"include_raw_content\": false,\n  \"include_images\": false,\n  \"include_image_descriptions\": false,\n  \"include_domains\": [],\n  \"exclude_domains\": []\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        360,
+        5500
+      ],
+      "id": "0ebe9e24-39ed-49f1-b78e-35e46cc13344",
+      "name": "Web Search",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1Gs5ooRQh4ZYMIK6",
+          "name": "Tavily Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "id": "682cdc92-d40e-4413-887f-b95b870c99e6",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        3680
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c82f3a5e-3070-4501-b321-a21529d93efe",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        220,
+        3580
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define an array of URLs\nconst urls = [\n  { url: \"https://www.mcdonalds.com/us/en-us.html\" },\n  { url: \"https://www.chipotle.com/\" },\n  { url: \"https://example.com/invalid-file\" }\n];\n\n// Return the array as output\nreturn urls.map(item => ({ json: item }));\n"
+      },
+      "id": "9b928ddc-d453-4f07-b004-2dff20c2ff54",
+      "name": "Set URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        3580
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00873281-b8c8-400e-8385-e5fd5e35ae9d",
+              "name": "data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f624ae9f-4398-4664-b167-e9fe54e3a0bb",
+      "name": "Example",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        3500
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# 20) Continue on Error",
+        "height": 500,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        3400
+      ],
+      "id": "a3f1a1c9-c43d-4cc0-9098-471142ee182f",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "# 5) Deactivate",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -780
+      ],
+      "id": "2ecac518-183b-42a2-a0fa-8356834c8838",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        260,
+        -660
+      ],
+      "id": "9e1777e3-79c8-40f5-bbb0-174028a23028",
+      "name": "Gmail",
+      "webhookId": "6d0a10b1-a0b0-4e26-b090-e73e3b0528ed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KY7391f1ZHRL52Nu",
+          "name": "Demo 4/2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# 9) n8n Attribution",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        260
+      ],
+      "id": "d3291239-7036-4daa-b3ea-2100ca64be26",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        40,
+        380
+      ],
+      "id": "8ca45166-d6eb-4527-a473-9ef77d12904b",
+      "name": "Gmail1",
+      "webhookId": "6d0a10b1-a0b0-4e26-b090-e73e3b0528ed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KY7391f1ZHRL52Nu",
+          "name": "Demo 4/2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        380
+      ],
+      "id": "4012c586-1f04-4c1b-af02-255c9667de0b",
+      "name": "Telegram",
+      "webhookId": "9f206520-18ce-48df-9744-b6053353cc89",
+      "credentials": {
+        "telegramApi": {
+          "id": "9jQWan3cOz3tE62s",
+          "name": "Telegram account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        380
+      ],
+      "id": "6bd7c154-548c-4515-8816-b1e1168323ba",
+      "name": "Slack",
+      "webhookId": "ce653653-ff32-4fe6-9d17-3dfe9cf1657b",
+      "credentials": {
+        "slackApi": {
+          "id": "fFHJ6VL4hb5bX2q0",
+          "name": "Slack account 3"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# 12) Error Workflow\n\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        1280
+      ],
+      "id": "c0a6e901-870e-4fe1-9d14-8bde99ac4e48",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        1400
+      ],
+      "id": "b34b26b1-e64b-4b29-ac22-d06b29f6d5e1",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bafeeae4-afd2-46f0-b29d-cae8ee872011",
+              "name": "Workflow Name",
+              "value": "={{ $workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "49bacaac-fb66-4ba4-b63d-cee0f320be44",
+              "name": "Workflow ID",
+              "value": "={{ $workflow.id }}",
+              "type": "string"
+            },
+            {
+              "id": "92077203-7521-4c65-9f23-e474b59c3026",
+              "name": "Workflow Active?",
+              "value": "={{ $workflow.active }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        1740
+      ],
+      "id": "358019ce-3b87-482b-9827-65e77e3d1612",
+      "name": "Workflow Variables"
+    },
+    {
+      "parameters": {
+        "content": "# 13) Workflow Variables\n\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        1620
+      ],
+      "id": "e2223257-9b30-43fe-baa5-1fe6aea167f0",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "# 14) Specify Input\n\n\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        1960
+      ],
+      "id": "799225bf-47c9-4d16-b4de-cb81b436f602",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "phone numebr"
+            },
+            {
+              "name": "email"
+            },
+            {
+              "name": "customer name"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        2080
+      ],
+      "id": "7d9442af-2d78-4e63-981b-8a78272e8bc1",
+      "name": "When Executed by Another Workflow",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# 21) Error Output\n",
+        "height": 400,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        3920
+      ],
+      "id": "62aee5b1-0df4-4020-9e03-4db8bd79302d",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        4040
+      ],
+      "id": "b8a0e618-ed64-44b2-8162-c329c5145703",
+      "name": "AI Agent",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        20,
+        4180
+      ],
+      "id": "9ac2b4d7-a3d5-4ed7-9d65-dcd807db848a",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        440,
+        4040
+      ],
+      "id": "5782b924-a826-4eec-ac78-307647fb3bfe",
+      "name": "Aggregate",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "# 15) Sub Execution Data\n\n\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        2300
+      ],
+      "id": "43c30d1a-4bc6-44d1-924d-d54f1c10b0f0",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Send an email to nate@example.com asking if he enjoys playing with sand",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        140,
+        2400
+      ],
+      "id": "b0184b5d-4748-4b30-a115-9a7af4f486ea",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        0,
+        2480
+      ],
+      "id": "404a3d11-977e-46a4-96dc-2ace185dac5e",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to send emails",
+        "workflowId": {
+          "__rl": true,
+          "value": "C3hLlOS4O6ZJtVFy",
+          "mode": "list",
+          "cachedResultName": "🤖Email Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        2460
+      ],
+      "id": "2439a84a-e7db-4042-87eb-daa307c5ef69",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "content": "# 16) Agent Logs\n\n\n",
+        "height": 80,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        700,
+        2340
+      ],
+      "id": "c3ae4487-217f-4f2d-80eb-6189fef730ef",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "# 17) Copy to Editor\n\n\n",
+        "height": 80,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        700,
+        2440
+      ],
+      "id": "54bfa1d4-3b31-45d5-85d0-efba7e7c9cfd",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "# 6) Organization",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -440
+      ],
+      "id": "739a2216-0e7a-4545-ae38-a62afc74d41e",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        -340
+      ],
+      "id": "9fb54191-bc03-4d24-a7a8-697e3145796a",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        -320
+      ],
+      "id": "79e17400-1803-4883-80ba-dce4b90231a6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "# 19) Standardize Input\n\n\n",
+        "height": 400,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        2980
+      ],
+      "id": "f762b91b-4350-45de-92fc-db51363454e1",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        320,
+        3080
+      ],
+      "id": "2546c97b-efd5-4ea0-a167-25e388c14d04",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        560,
+        3260
+      ],
+      "id": "18c40c7b-0a3b-412d-a29f-ff8c5a095fc5",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        3220
+      ],
+      "id": "ea766bce-5816-476a-8015-64813da95ee8",
+      "name": "When chat message received",
+      "webhookId": "b144fd02-2399-44be-8d3a-a2098a6db81d",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        3080
+      ],
+      "id": "5b367623-49ba-4b1c-9778-c793251e2fb3",
+      "name": "Telegram Trigger",
+      "webhookId": "65b00106-6566-4aa1-8a54-f46d4dc2275b",
+      "credentials": {
+        "telegramApi": {
+          "id": "9jQWan3cOz3tE62s",
+          "name": "Telegram account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aef7f30e-507a-4284-9b5f-2b4e7ddcaf85",
+              "name": "message.text",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        3220
+      ],
+      "id": "f18302fc-dd10-4ba1-ac22-3802a6191dd8",
+      "name": "Set Text"
+    },
+    {
+      "parameters": {
+        "content": "# 18) Human in the Loop\n\n\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        2640
+      ],
+      "id": "48a33461-9dae-48c4-b82d-4967d9529ed2",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "guildId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        40,
+        2760
+      ],
+      "id": "c4ccbcdc-c5e2-4eb6-9f8a-8dfe09f8f2e7",
+      "name": "Discord",
+      "webhookId": "6b57f912-7c07-4d58-858f-d93a93be10f2",
+      "credentials": {
+        "discordBotApi": {
+          "id": "fHrCrkFdy4C1fEZZ",
+          "name": "Discord Bot account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleChat",
+      "typeVersion": 1,
+      "position": [
+        260,
+        2760
+      ],
+      "id": "61b88cef-60a7-477e-8a45-c523780052e0",
+      "name": "Google Chat",
+      "webhookId": "3331fc51-830c-47bc-976a-3498f42e711a",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "user": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "responseType": "freeText",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        2760
+      ],
+      "id": "d05ab910-5fc4-411f-998c-270823e198b9",
+      "name": "Slack1",
+      "webhookId": "c2d018a7-25fc-44ec-a77a-eaf1dd92c435",
+      "credentials": {
+        "slackApi": {
+          "id": "fFHJ6VL4hb5bX2q0",
+          "name": "Slack account 3"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# 7) Workflow History",
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -100
+      ],
+      "id": "bde5e38c-af70-48ae-9a40-cea55a116347",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "# 8) Tab",
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        80
+      ],
+      "id": "ebcf8b6e-b36e-4610-88bc-bfd47e7f3f9f",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "# 3) Mock Data",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -1480
+      ],
+      "id": "21655821-4f52-4a4d-9b76-cb3bb2747a5c",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "# 22) Other Settings\n",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        4340
+      ],
+      "id": "846874c4-572d-495b-9722-a8312d11a5ac",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "url": "https://www.chipotle.com/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        4460
+      ],
+      "id": "8220901e-8413-4bc4-88d8-e9003006457f",
+      "name": "HTTP Request1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "test",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        260,
+        4460
+      ],
+      "id": "5b6a4f16-9e1b-4c61-95de-a393df1e154c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "duplicateItem": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        4460
+      ],
+      "id": "b20c7ced-e3b5-45df-91a4-9f29667f313c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Output 4 stories",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        160,
+        4800
+      ],
+      "id": "b82ff878-93d1-4bab-8b34-7ba5886974fd",
+      "name": "AI Agent3"
+    },
+    {
+      "parameters": {
+        "content": "# 23) Agent Structured Outputs\n",
+        "height": 340,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        4680
+      ],
+      "id": "246a1253-fd6a-4620-ac87-0f2492f0a3fa",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        20,
+        4880
+      ],
+      "id": "a5f10ae0-01ce-432e-b98e-fecfab2750e8",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scene1\": \"scene1\",\n  \"scene2\": \"scene2\",\n  \"scene3\": \"scene3\",\n  \"scene4\": \"scene4\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        520,
+        4880
+      ],
+      "id": "1b5c9f16-8a61-41e5-b135-7a6738657fec",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {
+    "Perplexity": [
+      {
+        "json": {
+          "id": "63f5669d-4352-45df-825e-dae5d383f807",
+          "model": "sonar",
+          "created": 1747081335,
+          "usage": {
+            "prompt_tokens": 11,
+            "completion_tokens": 120,
+            "total_tokens": 131,
+            "search_context_size": "low"
+          },
+          "citations": [
+            "https://n8n.io",
+            "https://pixeljets.com/blog/n8n/",
+            "https://www.youtube.com/watch?v=_EdRzDY9nh4",
+            "https://datascientest.com/en/n8n-an-overview-of-the-workflow-automation-tool",
+            "https://workos.com/blog/n8n-the-workflow-automation-tool-for-the-ai-age"
+          ],
+          "object": "chat.completion",
+          "choices": [
+            {
+              "index": 0,
+              "finish_reason": "stop",
+              "message": {
+                "role": "assistant",
+                "content": "**n8n** (pronounced \"n-eight-n\") is a workflow automation tool that combines low-code and event-triggered capabilities, built using Node.js. It allows users to create workflows by connecting nodes, each representing a step in a process, and supports both real-time triggers and scheduled tasks. n8n is open-source, self-hostable, and offers a visual interface alongside the ability to use code (JavaScript or Python) for more complex workflows. It supports over 1700 templates and integrates with numerous services, providing flexibility and control over automation processes[1][4][5]."
+              },
+              "delta": {
+                "role": "assistant",
+                "content": ""
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ],
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {
+          "hello": "everyone"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "1": {
+      "main": [
+        [
+          {
+            "node": "2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2": {
+      "main": [
+        [
+          {
+            "node": "3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Perplexity": {
+      "main": [
+        [
+          {
+            "node": "Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Current Time",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Array": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "Web Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Example",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set URLs": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram": {
+      "main": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Set Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord": {
+      "main": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2e132845-5009-4487-8375-981f0385e143",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "95e5a8c2e51c83e33b232ea792bbe3f063c094c33d9806a5565cb31759e1ad39"
+  },
+  "id": "lyuNJ4OJ6Z4ZPUPB",
+  "tags": []
+}

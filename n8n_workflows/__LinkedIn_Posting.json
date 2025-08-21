@@ -1,0 +1,466 @@
+{
+  "name": "🤖LinkedIn Posting",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "639cbe0a-16ff-4ff0-84fa-ed26d4d801f3",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        840
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "PI7dqswJpx1Asynn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "62d051a3-a57f-49ff-9112-2c91db9cc8a7",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appgwOe40BG4DmcPx",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Posting",
+          "cachedResultUrl": "https://airtable.com/appgwOe40BG4DmcPx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaHqLhwn5Jgidfu",
+          "mode": "list",
+          "cachedResultName": "Campaigns",
+          "cachedResultUrl": "https://airtable.com/appgwOe40BG4DmcPx/tblaHqLhwn5Jgidfu"
+        },
+        "options": {
+          "view": {
+            "__rl": true,
+            "value": "viwcJbhmKxfxy26Mt",
+            "mode": "list",
+            "cachedResultName": "Active",
+            "cachedResultUrl": "https://airtable.com/appgwOe40BG4DmcPx/tblaHqLhwn5Jgidfu/viwcJbhmKxfxy26Mt"
+          }
+        }
+      },
+      "id": "37c21045-4b6c-45cd-a7b9-d0f18ed9377a",
+      "name": "Get Campaigns",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        360,
+        400
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "dMVCR0NWnvcLapoE",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "include": "specifiedFields",
+        "fieldsToInclude": "title, raw_content",
+        "options": {}
+      },
+      "id": "f68eb020-d8d2-486e-a6ec-808d2f558547",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "id": "b46319ca-3d6f-43e9-8982-4143be6482dc",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "8823de38-fcfd-4ec1-97f0-6ce5d49f254b",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        820
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "PI7dqswJpx1Asynn",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"api_key\": \"API KEY GOES HERE\",\n    \"query\": \"{{ $json.query.replace(/\"/g, '\\\\\"') }}\",\n    \"search_depth\": \"basic\",\n    \"include_answer\": true,\n    \"topic\": \"news\",\n    \"days\": {{ $json.days }},\n    \"include_raw_content\": true,\n    \"max_results\": 3\n} ",
+        "options": {}
+      },
+      "id": "ec9b82d2-84f6-4d4d-a27e-80590855500d",
+      "name": "Search Internet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1220,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "caf94af8-18c2-462b-85bb-644d807f94b3",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        640,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appgwOe40BG4DmcPx",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Posting",
+          "cachedResultUrl": "https://airtable.com/appgwOe40BG4DmcPx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKPSwgj4tiI7lxC",
+          "mode": "list",
+          "cachedResultName": "Long Text",
+          "cachedResultUrl": "https://airtable.com/appgwOe40BG4DmcPx/tblKPSwgj4tiI7lxC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $('Blog Writer').item.json.output }}",
+            "title": "={{ $json.text }}",
+            "campaign": "=[\"{{ $('Loop Over Items').item.json.id }}\"]"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "campaign",
+              "displayName": "campaign",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "661262ba-a789-41d6-885b-8432f2605441",
+      "name": "Update Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1980,
+        620
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "dMVCR0NWnvcLapoE",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b493a3c6-939a-4301-9257-055b80c28d7a",
+              "name": "query",
+              "value": "={{ $json.search }}",
+              "type": "string"
+            },
+            {
+              "id": "5c4c9825-6834-4ad6-8f48-9e260b61ac93",
+              "name": "targetAudience",
+              "value": "={{ $json.targetAudienceDesc[0] ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "3f4903cc-aa0f-44b0-864e-2a225b251225",
+              "name": "product",
+              "value": "={{ $json.productDesc[0] ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "553f79eb-313a-473d-9a82-123fc307c8f2",
+              "name": "days",
+              "value": "={{ $('Get Campaigns').item.json.daysSincePosting }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d70a1534-e71e-4ddf-baec-173014d6a893",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a title for the following article(do not include quotes. output the final title only):\n\n{{ $json.output }}\n\n\n[target audience]\n{{ $('Edit Fields').item.json.targetAudience }}\n\n\n[product]\n{{ $('Edit Fields').item.json.product }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# System Role\nYou are a creative and insightful title generator, skilled at crafting engaging and impactful titles for articles.\n\n# Task Specification\nAnalyze the provided article and generate a single, concise, and captivating title. The title should capture the essence of the article and entice readers to click or engage with it.\n\n# Specifics and Context\nThis task is vital for attracting readers and increasing engagement with the article. By crafting an effective title, you help ensure the article's content reaches its intended audience. The title should reflect the article's tone and key points, balancing intrigue and clarity.\n\n# Examples\n## Example 1\n**Input:**  \nArticle: \"A blog post discussing how remote work has changed the modern workplace, including benefits like flexibility and challenges such as isolation.\"  \n**Output:**  \nHow Remote Work Is Redefining the Modern Workplace\n\n## Example 2\n**Input:**  \nArticle: \"An exploration of the Mediterranean diet, its components, and its health benefits, including reducing heart disease risk and supporting brain health.\"  \n**Output:**  \nThe Mediterranean Diet: A Tasty Recipe for Health and Longevity\n\n# Reminders\n- Output only the raw title, without any additional text or formatting.\n- Ensure the title is concise, engaging, and directly relevant to the article content.\n"
+            }
+          ]
+        }
+      },
+      "id": "f44255b6-e0fb-48f4-ac1d-de2d0d314e94",
+      "name": "Title Generator",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1640,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=[content]\n{{ $json.data.toJsonString() }}\n\n\n[target audience]\n{{ $('Edit Fields').item.json.targetAudience }}\n\n\n[product]\n{{ $('Edit Fields').item.json.product }}",
+        "options": {
+          "systemMessage": "=# System Role\nYou are a skilled and creative blog writer, capable of crafting engaging, concise, and well-structured two-paragraph blog articles based on provided content.\n\n# Task Specification\nWrite a two-paragraph blog article using the provided content. The blog should be coherent, engaging, and informative, tailored to a general audience. Ensure the tone is professional yet approachable, and the structure flows logically from introduction to conclusion.\n\n# Specifics and Context\nThis task is essential for producing quick, high-quality blog articles that capture readers' attention while accurately conveying the intended message. By writing clear and engaging content, you help brands or individuals establish thought leadership and connect with their audience effectively.\n\n# Examples\n## Example 1\n**Input:**  \nContent: \"Remote work has grown 44% in the last five years. Benefits include flexibility and reduced commute times. Challenges include maintaining productivity and combating isolation.\"\n\n**Output:**  \nRemote work has become a transformative trend, with a 44% increase in adoption over the past five years. The appeal lies in its flexibility, allowing employees to tailor their schedules and eliminate time-consuming commutes. This shift has unlocked new possibilities for work-life balance and broadened the talent pool for businesses willing to embrace remote setups.\n\nHowever, remote work isn’t without its challenges. Employees often face difficulties in maintaining productivity outside a structured office environment and struggle with feelings of isolation. Addressing these concerns requires thoughtful solutions, such as virtual collaboration tools and strategies to foster connection, ensuring remote work remains both productive and fulfilling.\n\n## Example 2\n**Input:**  \nContent: \"The Mediterranean diet includes fruits, vegetables, whole grains, and healthy fats like olive oil. Studies show it reduces the risk of heart disease and supports brain health.\"\n\n**Output:**  \nThe Mediterranean diet has long been celebrated as one of the healthiest eating patterns in the world. Emphasizing fresh fruits, vegetables, whole grains, and heart-healthy fats like olive oil, this diet is as delicious as it is nutritious. Its flavorful diversity makes it easy to adopt and sustain, whether you’re enjoying a vibrant Greek salad or a wholesome bowl of minestrone.\n\nWhat sets the Mediterranean diet apart is its scientifically backed health benefits. Numerous studies highlight its ability to reduce the risk of heart disease and support cognitive health, making it a cornerstone for longevity and wellness. By prioritizing natural, unprocessed foods, this lifestyle offers a sustainable approach to eating well and living better.\n\n# Reminders\n- Maintain clarity and logical flow between paragraphs.\n- Ensure the tone is engaging yet professional.\n- Keep the blog concise and aligned with the provided content.\n"
+        }
+      },
+      "id": "299d3f9d-0395-4927-8c32-4147d8d99b8a",
+      "name": "Blog Writer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1300,
+        620
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Blog Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Blog Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Title Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Internet": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Airtable": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Search Internet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Title Generator": {
+      "main": [
+        [
+          {
+            "node": "Update Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blog Writer": {
+      "main": [
+        [
+          {
+            "node": "Title Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "30994a50-08b0-47e4-a0f0-535b04268f47",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "95e5a8c2e51c83e33b232ea792bbe3f063c094c33d9806a5565cb31759e1ad39"
+  },
+  "id": "55Ri2nOnQO0oK3F7",
+  "tags": []
+}

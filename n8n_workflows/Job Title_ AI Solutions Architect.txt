@@ -1,0 +1,46 @@
+﻿Job Title: AI Solutions Architect
+Location: Remote or Hybrid (Preferred: US-based)
+Department: AI Engineering / Solutions
+Seniority Level: Senior-Level
+________________
+
+
+About the Role
+We’re looking for a strategic and hands-on AI Solutions Architect who can bridge the gap between business needs and technical implementation. You will work with cross-functional teams to design, propose, and oversee the development of AI-powered solutions, focusing on real-world applications that create measurable business impact.
+________________
+
+
+Key Responsibilities
+* Architect and design scalable AI systems that leverage LLMs, vector databases, and prompt engineering.
+* Collaborate with stakeholders to translate business requirements into technical specs.
+* Lead technical discovery calls and client-facing solution design sessions.
+* Develop and maintain reusable architectures, templates, and reference implementations.
+* Advise on model selection (e.g. OpenAI, Claude, Gemini), data strategy (e.g. RAG, embeddings), and deployment methods (e.g. self-hosted, serverless).
+* Oversee integration with APIs, third-party tools, and workflow platforms like n8n.
+* Stay current with AI trends, ensuring proposed solutions reflect best practices.
+________________
+
+
+Minimum Qualifications
+* 3+ years of experience in AI/ML, automation, or backend development.
+* Strong understanding of LLM ecosystems (e.g. OpenAI, Anthropic, Mistral, Cohere).
+* Proficiency with tools such as n8n, LangChain, or custom agent frameworks.
+* Experience with vector databases (Pinecone, Weaviate, or Qdrant) and retrieval techniques (RAG).
+* Familiarity with prompt engineering, tool/function calling, and system design.
+* Excellent communication and documentation skills.
+________________
+
+
+Preferred Qualifications
+* Prior experience delivering AI solutions to clients or as part of an agency.
+* Understanding of data privacy, security, and ethical considerations in AI.
+* Experience with Python or JavaScript-based AI development workflows.
+* Strong grasp of business workflows and how AI can enhance them.
+* Previous exposure to low-code platforms or custom integrations.
+________________
+
+
+Success in This Role Looks Like:
+* Delivered at least 2 end-to-end AI agent or automation projects.
+* Created scalable solutions that were adopted and used successfully by teams or clients.
+* Provided architecture that reduced delivery time or operational complexity.

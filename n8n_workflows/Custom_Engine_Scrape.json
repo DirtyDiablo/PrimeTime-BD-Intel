@@ -1,0 +1,188 @@
+{
+  "name": "Custom_Engine_Scrape",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "eac8da0f-b140-4894-a1b5-191db47b55df",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        460,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/customsearch/v1?key=YOUR_API_KEY&cx=ENGINE_ID&q=CEO+real+estate+Chicago&num=10&start={{ $json.start }}\n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c6329ee6-6644-470a-859e-cdb1d1bbf8b1",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let start = 0;  // Initial page\nconst limit = 100;  // Limit to fetch 500 profiles (adjust as needed)\nconst batchSize = 10;  // Google Search returns 100 results per page\nconst output = [];\n\n// Loop through pages by increments of 100\nwhile (start < limit) {\n  output.push({ json: { start: start } });\n  start += batchSize;  // Increment by 100 for each page\n}\n\nreturn output;\n"
+      },
+      "id": "03af248c-d1d9-4549-ab76-a04fcab0ba95",
+      "name": "Pagination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a4e77aa4-9ae9-44d4-8dd3-cad2dfefe4d1",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        820,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the items array from the response\nconst items = $json[\"items\"];  // Access the items array directly from the response\n\n// Create an empty array to store the extracted URLs\nconst output = [];\n\nif (items && items.length > 0) {\n  // Loop over each item in the array and extract the 'link'\n  for (const item of items) {\n    if (item.link) {\n      // Push each extracted URL as a separate item in the output\n      output.push({\n        json: {\n          url: item.link,\n        }\n      });\n    }\n  }\n}\n\nreturn output;  // Return the array of URL items\n"
+      },
+      "id": "13ba2fdd-e9d7-43a9-867a-cd3074f18eeb",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1240,
+        480
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_0bfvmyLdhc-j8QhCDDRVZQZvk5TNg7TYoUsvyh9MvY",
+          "mode": "list",
+          "cachedResultName": "Profiles Demo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_0bfvmyLdhc-j8QhCDDRVZQZvk5TNg7TYoUsvyh9MvY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_0bfvmyLdhc-j8QhCDDRVZQZvk5TNg7TYoUsvyh9MvY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "db801fee-c4d2-4350-ae84-a4863a0b7fb9",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1420,
+        480
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pagination": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "97107a16-cfd9-4b1c-b5cb-2a0e3c2c936b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c1b6c67795880a3fbc84416c0e0be9b6936317370c92491eb656bfc8db6f2a2e"
+  },
+  "id": "gp4dQvDexOCaLMZG",
+  "tags": []
+}

@@ -1,0 +1,21 @@
+﻿Name: Brian Chen
+Email: brianchen75@gmail.com
+LinkedIn: linkedin.com/in/brianchen-design
+Location: San Diego, CA
+Summary
+UX Designer with a background in visual design and front-end tools. Looking to pivot into more technical roles in the AI space, though currently limited experience with backend systems or LLM development.
+Skills
+* Figma, Adobe XD, Webflow
+* Basic HTML/CSS/JS
+* User research & usability testing
+* Canva, Loom, Slack
+* No AI tooling or system design experience
+Experience
+UX Designer – Bloom HealthTech
+ Aug 2020 – Present
+* Led UI design for health dashboard used by 20k+ users.
+* No involvement in system architecture or backend development.
+
+Junior Web Designer – Freelance
+ 2018 – 2020
+   * Created landing pages and visual prototypes.

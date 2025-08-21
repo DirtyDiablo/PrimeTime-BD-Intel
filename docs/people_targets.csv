@@ -1,0 +1,3 @@
+full_name,role,level,company,program,site_location,email,phone,linkedin_url,org_unit,recruiter_or_hiring_mgr_flag,added_date,last_verified_date,notes
+Jane Smith,Service Delivery Manager,SDM,SAIC,AESD,"Adelphi, MD",,,https://www.linkedin.com/in/jane-smith-example,Enterprise IT / Service Desk,HiringMgr,2025-08-08,2025-08-08,Leads Adelphi desk ops; good for backfill pitch
+Robert Lee,Site Lead,Site Lead,SAIC,AESD,"Aberdeen, MD",,,https://www.linkedin.com/in/robert-lee-example,Service Desk Operations,HiringMgr,2025-08-08,,Night/weekend coverage responsibility

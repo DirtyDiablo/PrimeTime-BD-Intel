@@ -1,0 +1,423 @@
+{
+  "name": "Voice Workflows",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "1bc3c912-02d9-4061-b07e-db5f0bbd36c7",
+      "name": "Telegram Trigger",
+      "webhookId": "0eeb79e9-ac6d-4c21-bb6d-690248973e2d",
+      "credentials": {
+        "telegramApi": {
+          "id": "9jQWan3cOz3tE62s",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        0
+      ],
+      "id": "feef4e5e-cbf4-4e65-8824-d3b4f635f49a",
+      "name": "Get a file",
+      "webhookId": "0f77dfc6-55fe-49e7-9a7b-f125daae26ef",
+      "credentials": {
+        "telegramApi": {
+          "id": "9jQWan3cOz3tE62s",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "operation": "speechToText",
+        "additionalOptions": {},
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "b994825b-79fb-4b55-8dd9-15b46ee7995e",
+      "name": "Transcribe audio or video",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "OjJ3ixMDFRIHuLSb",
+          "name": "ElevenLabs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant who is extremely funny."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e0a975f0-844d-4002-9e6c-1fb158ae7faa",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        688,
+        144
+      ],
+      "id": "106c96e7-f56a-44dc-8db5-dd18f97cb701",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "9PVP7ENhDskL0KYHAKtD",
+          "mode": "id"
+        },
+        "text": "={{ $json.output }}",
+        "additionalOptions": {},
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        976,
+        0
+      ],
+      "id": "4aed25d9-0808-44a3-8f87-05058fb2999b",
+      "name": "Convert text to speech",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "OjJ3ixMDFRIHuLSb",
+          "name": "ElevenLabs account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "e88eb1f7-0cae-4dc5-b59b-da9ab4ac0c87",
+      "name": "Send an audio file",
+      "webhookId": "e26a3316-eac5-4262-bf15-c85b5f8dc105",
+      "credentials": {
+        "telegramApi": {
+          "id": "9jQWan3cOz3tE62s",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "667ca354-cc10-40fe-896b-08153fad7857",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        256,
+        448
+      ],
+      "id": "319537de-002e-4ac1-ac58-14589ba25a78",
+      "name": "Webhook",
+      "webhookId": "667ca354-cc10-40fe-896b-08153fad7857"
+    },
+    {
+      "parameters": {
+        "model": "sonar",
+        "messages": {
+          "message": [
+            {
+              "content": "={{ $json.body.searchQuery }}"
+            }
+          ]
+        },
+        "simplify": true,
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        416,
+        448
+      ],
+      "id": "37e65321-4338-4c0e-986d-5d167c69f537",
+      "name": "Message a model",
+      "credentials": {
+        "perplexityApi": {
+          "id": "5djL3YQiuN26EJiA",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an expert research agent. You will be fed information, and you need to make a concise summary. It should only be about three sentences. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        560,
+        448
+      ],
+      "id": "e9658d85-df4a-4e09-9687-c2c81e53bbb3",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        560,
+        592
+      ],
+      "id": "fd45fca4-7cfc-45b0-b142-399bf1d8caf3",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "fpo6OUh9TcHg29jk",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        448
+      ],
+      "id": "fd1eeecc-e479-4549-a604-c3c136467c36",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "# Telegram Voice Output ",
+        "height": 400,
+        "width": 1216,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -96
+      ],
+      "id": "03629d03-f8a8-454d-a0d1-b0a7b5eacb42",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# ElevenLabs Conversational Agent\n",
+        "height": 400,
+        "width": 1232,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        336
+      ],
+      "id": "5d37fa43-3118-4bb7-a9b8-7cea3f9a7ac5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# 🛠️ Setup Guide  \n**Author:** [Nate Herk](https://www.youtube.com/@nateherk)\n\n### Follow these steps to get the Telegram Voice Output and ElevenLabs Conversational Agents working:\n\n---\n**🎙️ Telegram Voice Output Agent**\n\n- **Connect the Trigger**  \n  Start with the **Telegram Trigger** node – or swap it with your preferred trigger.\n\n- **Connect [ElevenLabs](https://try.elevenlabs.io/bzis5j24bluk) API Key**  \n  Grab your API key from ElevenLabs and plug it into both ElevenLabs nodes in your flow.\n\n- **Power the AI Agent**  \n  Use your [OpenRouter](https://openrouter.ai/) API key to fuel the main AI logic behind the scenes.\n\n- **Test It Out**  \n  Run your workflow and listen for the voice response via Telegram!\n\n---\n\n**🧠 ElevenLabs Conversational Agent**\n\n- **Configure Your Voice Agent**  \n  Head over to [ElevenLabs](https://try.elevenlabs.io/bzis5j24bluk) and set up a **Conversational Voice Agent** as demoed in the full YouTube walkthrough.\n\n- **Tool Call & Webhook**  \n  Create a **tool call** for the voice agent and connect your **webhook URL**. Be sure to double-check whether it’s a **test** or **production** endpoint.\n\n- **Connect [Perplexity](https://www.perplexity.ai/) API Key**  \n  This powers the conversation logic—make sure it's set up correctly.\n\n- **Full Flow Test**  \n  Trigger your agent in ElevenLabs and verify the end-to-end voice interaction works seamlessly.\n",
+        "height": 832,
+        "width": 624
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -96
+      ],
+      "id": "08266db2-45cc-4637-9056-c4a6c2fb453d",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe audio or video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe audio or video": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Convert text to speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert text to speech": {
+      "main": [
+        [
+          {
+            "node": "Send an audio file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9bc59dfc-a87b-4f65-aae1-de974b66a5ca",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "95e5a8c2e51c83e33b232ea792bbe3f063c094c33d9806a5565cb31759e1ad39"
+  },
+  "id": "5qeI2aXSPE1GitLA",
+  "tags": []
+}
